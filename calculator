@@ -1,0 +1,23 @@
+import java.util.Scanner;
+public class calculator {
+		public static void main (String [] args) {
+			Scanner sc = new Scanner(System.in);
+			System.out.println("Enter the number1");
+			int number=sc.nextInt();
+			System.out.println("Enter the number2");
+			int secondnumber=sc.nextInt();
+			int sum=(number + secondnumber);
+			System.out.println("The sum is" +sum );
+			
+			if(number>secondnumber) {
+				int product=(number%secondnumber);
+				System.out.println("The product is" +product);
+				
+			}
+			else {
+				System.out.println("Invalid");
+			}
+
+
+}
+}
