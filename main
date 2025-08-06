@@ -1,0 +1,25 @@
+package krishnapriya;
+
+class Studentclass {
+    String name;
+    static int studentCount;
+    static {
+    	studentCount=0;
+    }
+
+    Studentclass(String name) {
+        this.name = name;
+        studentCount++;
+    }
+
+    public static int getStudentCount() {
+        return studentCount;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Studentclass student = new Studentclass("Ramu");
+        System.out.println(Studentclass.getStudentCount());
+    }
+}
