@@ -1,0 +1,14 @@
+package krishnapriya;
+
+public class CopyArray {
+	public static void main(String[] args) {
+		        int[]array = {1, 2, 3, 4, 5};
+		        int[]copy = new int[array.length];
+		        for(int  i=0;i< array.length; i++) {
+		            copy[i]=array[i];
+		        }
+		        for(int i:copy) {
+		            System.out.print(i + " ");
+		        }
+		    }
+	}
