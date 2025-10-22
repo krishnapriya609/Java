@@ -1,0 +1,96 @@
+ 
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.*;
+
+public class BloodDonorApp extends JFrame {
+
+    private JTextField nameField, ageField, contactField;
+    private JComboBox<String> bloodGroupBox;
+    private DefaultTableModel tableModel;
+    private JTable donorTable;
+
+    public BloodDonorApp() {
+        setTitle("Blood Donor Management");
+        setSize(600, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        // Panel for form inputs
+        JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        formPanel.add(new JLabel("Name:"));
+        nameField = new JTextField();
+        formPanel.add(nameField);
+
+        formPanel.add(new JLabel("Age:"));
+        ageField = new JTextField();
+        formPanel.add(ageField);
+
+        formPanel.add(new JLabel("Blood Group:"));
+        String[] bloodGroups = {"A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"};
+        bloodGroupBox = new JComboBox<>(bloodGroups);
+        formPanel.add(bloodGroupBox);
+
+        formPanel.add(new JLabel("Contact:"));
+        contactField = new JTextField();
+        formPanel.add(contactField);
+
+        // Buttons
+        JButton addButton = new JButton("Add Donor");
+        JButton clearButton = new JButton("Clear Fields");
+        JButton exitButton = new JButton("Exit");
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(addButton);
+        buttonPanel.add(clearButton);
+        buttonPanel.add(exitButton);
+
+        // Table to show donor details
+        String[] columns = {"Name", "Age", "Blood Group", "Contact"};
+        tableModel = new DefaultTableModel(columns, 0);
+        donorTable = new JTable(tableModel);
+        JScrollPane tableScroll = new JScrollPane(donorTable);
+
+        // Adding panels to frame
+        add(formPanel, BorderLayout.NORTH);
+        add(tableScroll, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // Button actions
+        addButton.addActionListener(e -> addDonor());
+        clearButton.addActionListener(e -> clearFields());
+        exitButton.addActionListener(e -> System.exit(0));
+    }
+
+    private void addDonor() {
+        String name = nameField.getText();
+        String age = ageField.getText();
+        String bloodGroup = (String) bloodGroupBox.getSelectedItem();
+        String contact = contactField.getText();
+
+        if (name.isEmpty() || age.isEmpty() || contact.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill all fields!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        tableModel.addRow(new Object[]{name, age, bloodGroup, contact});
+        clearFields();
+    }
+
+    private void clearFields() {
+        nameField.setText("");
+        ageField.setText("");
+        contactField.setText("");
+        bloodGroupBox.setSelectedIndex(0);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new BloodDonorApp().setVisible(true);
+        });
+    }
+}
+
