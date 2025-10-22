@@ -17,7 +17,7 @@ public class BloodDonorApp extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Panel for form inputs
+     
         JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 10));
         formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -38,7 +38,7 @@ public class BloodDonorApp extends JFrame {
         contactField = new JTextField();
         formPanel.add(contactField);
 
-        // Buttons
+       
         JButton addButton = new JButton("Add Donor");
         JButton clearButton = new JButton("Clear Fields");
         JButton exitButton = new JButton("Exit");
@@ -48,18 +48,16 @@ public class BloodDonorApp extends JFrame {
         buttonPanel.add(clearButton);
         buttonPanel.add(exitButton);
 
-        // Table to show donor details
         String[] columns = {"Name", "Age", "Blood Group", "Contact"};
         tableModel = new DefaultTableModel(columns, 0);
         donorTable = new JTable(tableModel);
         JScrollPane tableScroll = new JScrollPane(donorTable);
 
-        // Adding panels to frame
         add(formPanel, BorderLayout.NORTH);
         add(tableScroll, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Button actions
+       
         addButton.addActionListener(e -> addDonor());
         clearButton.addActionListener(e -> clearFields());
         exitButton.addActionListener(e -> System.exit(0));
