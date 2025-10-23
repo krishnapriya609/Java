@@ -1,0 +1,93 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class DashboardPage extends JFrame {
+    public DashboardPage(String donorName) {
+        setTitle("Donor Dashboard");
+        setSize(400, 600);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(null);
+
+        JPanel header = new JPanel();
+        header.setBackground(Color.RED);
+        header.setBounds(0,0,400,120);
+        header.setLayout(null);
+
+        JLabel nameLabel = new JLabel(donorName);
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 22));
+        nameLabel.setForeground(Color.WHITE);
+        nameLabel.setBounds(20,20,260,30);
+        header.add(nameLabel);
+
+        JLabel bloodTypeHeader = new JLabel("Blood Type    |    Units Donated");
+        bloodTypeHeader.setForeground(Color.WHITE);
+        bloodTypeHeader.setBounds(20,60,250,25);
+        header.add(bloodTypeHeader);
+
+        add(header);
+
+        JLabel welcomeLabel = new JLabel("Make your first donation");
+        welcomeLabel.setBounds(40, 130, 320, 30);
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        add(welcomeLabel);
+
+        JLabel infoLabel = new JLabel("Each donation can impact up to three lives.");
+        infoLabel.setBounds(40, 160, 320, 18);
+        add(infoLabel);
+
+        JButton scheduleBtn = new JButton("Schedule New Appointment");
+        scheduleBtn.setBackground(Color.RED);
+        scheduleBtn.setForeground(Color.WHITE);
+        scheduleBtn.setBounds(60, 200, 270, 45);
+        scheduleBtn.setFont(new Font("Arial", Font.BOLD, 15));
+        add(scheduleBtn);
+
+        JButton manageBtn = new JButton("Manage Appointments");
+        manageBtn.setBackground(new Color(255,255,255));
+        manageBtn.setForeground(Color.RED);
+        manageBtn.setBounds(60, 260, 270, 45);
+        manageBtn.setFont(new Font("Arial", Font.BOLD, 15));
+        add(manageBtn);
+
+        JButton donorCardBtn = new JButton("Donor Card");
+        donorCardBtn.setBackground(new Color(255,255,255));
+        donorCardBtn.setForeground(Color.RED);
+        donorCardBtn.setBounds(60, 320, 270, 45);
+        donorCardBtn.setFont(new Font("Arial", Font.BOLD, 15));
+        add(donorCardBtn);
+
+        scheduleBtn.addActionListener(e -> {
+            new AppointmentPage("Schedule New Appointment").setVisible(true);
+            this.dispose();
+        });
+
+        manageBtn.addActionListener(e -> {
+            new AppointmentPage("Manage Appointments").setVisible(true);
+            this.dispose();
+        });
+
+        donorCardBtn.addActionListener(e -> {
+            new AppointmentPage("Donor Card").setVisible(true);
+            this.dispose();
+        });
+    }
+
+    // Placeholder for subsequent pages
+    public static class AppointmentPage extends JFrame {
+        public AppointmentPage(String title) {
+            setTitle(title);
+            setSize(400,500);
+            setLocationRelativeTo(null);
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            JLabel label = new JLabel("This is the "+title+" page.", SwingConstants.CENTER);
+            label.setFont(new Font("Arial", Font.BOLD, 18));
+            add(label);
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new DashboardPage("Nathaniel").setVisible(true));
+    }
+}
