@@ -1,96 +1,190 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
 
 public class DonorPersonalDetailsPage extends JFrame {
-    private JTextField nameField, weightField;
-    private JComboBox<String> genderBox, bloodGroupBox, dayBox, monthBox, yearBox, plateletBox;
+
+    private JTextField nameField, weightField, phoneField;
+    private JComboBox<String> genderBox, bloodGroupBox, dayBox, monthBox, yearBox, districtBox, talukBox;
+    private JButton registerButton;
+    private String[] districts = {
+        "Select District", "Thiruvananthapuram", "Kollam", "Pathanamthitta", "Alappuzha",
+        "Kottayam", "Idukki", "Ernakulam", "Thrissur", "Palakkad", "Malappuram",
+        "Kozhikode", "Wayanad", "Kannur", "Kasaragod"
+    };
+
+    private String[][] taluks = {
+        {"Select Taluk"},
+        {"Thiruvananthapuram","Neyyattinkara","Nedumangad","Varkala","Chirayinkeezhu"},
+        {"Kollam","Punalur","Karunagappally","Pathanapuram","Kunnathur"},
+        {"Adoor","Kozhencherry","Pathanamthitta","Mallappally","Ranni"},
+        {"Alappuzha","Chengannur","Kuttanad","Cherthala","Mavelikkara","Ambalappuzha"},
+        {"Kottayam","Changanassery","Vaikom","Meenachil","Palai"},
+        {"Idukki","Peerumade","Devikulam","Udumbanchola","Thodupuzha"},
+        {"Ernakulam","Kunnathunad","Kothamangalam","Aluva","Muvattupuzha","Paravur"},
+        {"Thrissur","Mukundapuram","Chavakkad","Kodungallur","Wadakkanchery","Talappilly"},
+        {"Palakkad","Chittur","Alathur","Ottappalam","Mannarkkad","Pattambi"},
+        {"Tirur","Ponnani","Nilambur","Perinthalmanna","Ernad","Kondotty"},
+        {"Kozhikode","Vadakara","Quilandy","Koyilandy"},
+        {"Mananthavady","Sulthan Bathery","Vythiri"},
+        {"Kannur","Thalassery","Payyannur","Iritty","Taliparamba"},
+        {"Kasaragod","Manjeshwaram","Hosdurg"}
+    };
 
     public DonorPersonalDetailsPage() {
         setTitle("Donor Personal Details");
-        setSize(400, 500);
+        setSize(430, 580);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
+        setLayout(null);
 
         JPanel panel = new JPanel();
-        panel.setBackground(new Color(48, 55, 66)); // dark background
+        panel.setBounds(0, 0, 430, 580);
+        panel.setBackground(new Color(48, 55, 66));
         panel.setLayout(null);
 
-        JLabel nameLabel = new JLabel("Name (English):");
-        nameLabel.setForeground(Color.WHITE);
-        nameLabel.setBounds(30, 30, 120, 25);
+        JLabel nameLabel = createLabel("Name (English):", 35, 30);
         panel.add(nameLabel);
-
         nameField = new JTextField();
-        nameField.setBounds(160, 30, 180, 25);
+        nameField.setBounds(180, 30, 200, 25);
         panel.add(nameField);
 
-        JLabel genderLabel = new JLabel("Gender:");
-        genderLabel.setForeground(Color.WHITE);
-        genderLabel.setBounds(30, 70, 120, 25);
+        JLabel genderLabel = createLabel("Gender:", 35, 70);
         panel.add(genderLabel);
-
-        String[] genders = {"Gender", "Male", "Female", "Others"};
+        String[] genders = {"Select Gender", "Male", "Female", "Others"};
         genderBox = new JComboBox<>(genders);
-        genderBox.setBounds(160, 70, 180, 25);
+        genderBox.setBounds(180, 70, 200, 25);
         panel.add(genderBox);
 
-        JLabel bgLabel = new JLabel("Blood Group:");
-        bgLabel.setForeground(Color.WHITE);
-        bgLabel.setBounds(30, 110, 120, 25);
+        JLabel bgLabel = createLabel("Blood Group:", 35, 110);
         panel.add(bgLabel);
-
-        String[] bloodGroups = {"Blood Group", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
+        String[] bloodGroups = {"Select Blood Group", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
         bloodGroupBox = new JComboBox<>(bloodGroups);
-        bloodGroupBox.setBounds(160, 110, 180, 25);
+        bloodGroupBox.setBounds(180, 110, 200, 25);
         panel.add(bloodGroupBox);
 
-        JLabel dobLabel = new JLabel("Date of Birth:");
-        dobLabel.setForeground(Color.WHITE);
-        dobLabel.setBounds(30, 150, 120, 25);
+        JLabel dobLabel = createLabel("Date of Birth:", 35, 150);
         panel.add(dobLabel);
 
         String[] days = new String[32];
         days[0] = "DD";
         for (int i = 1; i <= 31; i++) days[i] = String.valueOf(i);
         dayBox = new JComboBox<>(days);
-        dayBox.setBounds(160, 150, 50, 25);
+        dayBox.setBounds(180, 150, 50, 25);
         panel.add(dayBox);
 
         String[] months = {"MM", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
         monthBox = new JComboBox<>(months);
-        monthBox.setBounds(215, 150, 60, 25);
+        monthBox.setBounds(240, 150, 60, 25);
         panel.add(monthBox);
 
         String[] years = new String[76];
         years[0] = "YYYY";
         for (int i = 1950; i <= 2025; i++) years[i - 1949] = String.valueOf(i);
         yearBox = new JComboBox<>(years);
-        yearBox.setBounds(280, 150, 60, 25);
+        yearBox.setBounds(310, 150, 70, 25);
         panel.add(yearBox);
 
-        JLabel weightLabel = new JLabel("Weight (KG):");
-        weightLabel.setForeground(Color.WHITE);
-        weightLabel.setBounds(30, 190, 120, 25);
+        JLabel weightLabel = createLabel("Weight (KG):", 35, 190);
         panel.add(weightLabel);
-
         weightField = new JTextField();
-        weightField.setBounds(160, 190, 180, 25);
+        weightField.setBounds(180, 190, 200, 25);
         panel.add(weightField);
 
-        JLabel plateletLabel = new JLabel("Willing to donate Platelet?");
-        plateletLabel.setForeground(Color.WHITE);
-        plateletLabel.setBounds(30, 230, 180, 25);
-        panel.add(plateletLabel);
+        JLabel districtLabel = createLabel("Select District:", 35, 230);
+        panel.add(districtLabel);
+        districtBox = new JComboBox<>(districts);
+        districtBox.setBounds(180, 230, 200, 25);
+        panel.add(districtBox);
 
-        String[] yn = {"Select Y/N", "Yes", "No"};
-        plateletBox = new JComboBox<>(yn);
-        plateletBox.setBounds(215, 230, 125, 25);
-        panel.add(plateletBox);
+        JLabel talukLabel = createLabel("Select Taluk:", 35, 270);
+        panel.add(talukLabel);
+        talukBox = new JComboBox<>(taluks[0]);
+        talukBox.setBounds(180, 270, 200, 25);
+        panel.add(talukBox);
 
-        // You can add Next/Submit button here to continue to Donor Communication Details page
+        districtBox.addActionListener(e -> {
+            int idx = districtBox.getSelectedIndex();
+            talukBox.setModel(new DefaultComboBoxModel<>(taluks[Math.min(idx, taluks.length - 1)]));
+        });
 
-        add(panel, BorderLayout.CENTER);
+        JLabel phoneLabel = createLabel("Phone Number:", 35, 310);
+        panel.add(phoneLabel);
+        phoneField = new JTextField();
+        phoneField.setBounds(180, 310, 200, 25);
+        panel.add(phoneField);
+
+        // Force phone field to allow only numbers
+        phoneField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) || phoneField.getText().length() >= 10) {
+                    e.consume();
+                }
+            }
+        });
+
+        registerButton = new JButton("Register");
+        registerButton.setBounds(150, 370, 120, 40);
+        registerButton.setBackground(Color.RED);
+        registerButton.setForeground(Color.WHITE);
+        registerButton.setFont(new Font("Arial", Font.BOLD, 16));
+        panel.add(registerButton);
+
+        registerButton.addActionListener(e -> registerDonor());
+
+        add(panel);
+    }
+
+    private JLabel createLabel(String text, int x, int y) {
+        JLabel label = new JLabel(text);
+        label.setForeground(Color.WHITE);
+        label.setBounds(x, y, 140, 25);
+        return label;
+    }
+
+    private void registerDonor() {
+        String name = nameField.getText();
+        String gender = (String)genderBox.getSelectedItem();
+        String bloodGroup = (String)bloodGroupBox.getSelectedItem();
+        String dob = yearBox.getSelectedItem()+"-"+monthBox.getSelectedItem()+"-"+dayBox.getSelectedItem();
+        String weight = weightField.getText();
+        String district = (String)districtBox.getSelectedItem();
+        String taluk = (String)talukBox.getSelectedItem();
+        String phone = phoneField.getText();
+
+        // Simple validation
+        if (name.isEmpty() || genderBox.getSelectedIndex()==0 || bloodGroupBox.getSelectedIndex()==0 ||
+            dayBox.getSelectedIndex()==0 || monthBox.getSelectedIndex()==0 || yearBox.getSelectedIndex()==0 ||
+            weight.isEmpty() || districtBox.getSelectedIndex()==0 || talukBox.getSelectedIndex()==0 ||
+            phone.length()!=10) {
+            JOptionPane.showMessageDialog(this, "Please fill all the fields correctly.");
+            return;
+        }
+
+        // Database insert operation
+        try {
+            Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/blood_donor_db", "root", "yourpassword");
+            String sql = "INSERT INTO donors (name, gender, blood_group, dob, weight, district, taluk, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, name);
+            ps.setString(2, gender);
+            ps.setString(3, bloodGroup);
+            ps.setString(4, dob);
+            ps.setString(5, weight);
+            ps.setString(6, district);
+            ps.setString(7, taluk);
+            ps.setString(8, phone);
+            ps.executeUpdate();
+            con.close();
+
+            JOptionPane.showMessageDialog(this, "Registered Successfully!");
+            dispose(); // Close the window on success
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage());
+        }
     }
 
     public static void main(String[] args) {
