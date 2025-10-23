@@ -1,147 +1,68 @@
+package java_project;
+
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.*;
 
-public class BloodDonorAppDB extends JFrame {
+public class Login extends JFrame {
+    private JTextField emailField;
+    private JPasswordField passwordField;
+    private JButton loginButton, registerButton;
+    private JLabel statusLabel;
 
-    private JTextField nameField, ageField, contactField;
-    private JComboBox<String> bloodGroupBox;
-    private DefaultTableModel tableModel;
-    private JTable donorTable;
-    private Connection conn;
-
-    public BloodDonorAppDB() {
-        setTitle("Blood Donor Management (Database Version)");
-        setSize(700, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    public Login() {
+        setTitle("Login Form");
+        setSize(400, 400);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-        // Connect to MySQL database
-        connectDatabase();
+        // Background panel
+        JPanel mainPanel = new JPanel();
+        mainPanel.setBackground(new Color(255, 102, 178)); // pink background
+        mainPanel.setLayout(new GridBagLayout());
+        add(mainPanel);
 
-        // Form panel
-        JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 10));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // Login card
+        JPanel card = new JPanel();
+        card.setBackground(Color.WHITE);
+        card.setPreferredSize(new Dimension(300, 300));
+        card.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
 
-        formPanel.add(new JLabel("Name:"));
-        nameField = new JTextField();
-        formPanel.add(nameField);
+        // Initialize components
+        emailField = new JTextField(20);
+        passwordField = new JPasswordField(20);
+        loginButton = new JButton("Login");
+        registerButton = new JButton("Register");
+        statusLabel = new JLabel("");
 
-        formPanel.add(new JLabel("Age:"));
-        ageField = new JTextField();
-        formPanel.add(ageField);
+        // Add components
+        gbc.gridx = 0; gbc.gridy = 0;
+        card.add(new JLabel("Email:"), gbc);
+        gbc.gridx = 1;
+        card.add(emailField, gbc);
 
-        formPanel.add(new JLabel("Blood Group:"));
-        String[] bloodGroups = {"A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"};
-        bloodGroupBox = new JComboBox<>(bloodGroups);
-        formPanel.add(bloodGroupBox);
+        gbc.gridx = 0; gbc.gridy = 1;
+        card.add(new JLabel("Password:"), gbc);
+        gbc.gridx = 1;
+        card.add(passwordField, gbc);
 
-        formPanel.add(new JLabel("Contact:"));
-        contactField = new JTextField();
-        formPanel.add(contactField);
+        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        card.add(loginButton, gbc);
 
-        // Buttons
-        JButton addButton = new JButton("Add Donor");
-        JButton loadButton = new JButton("Load Donors");
-        JButton clearButton = new JButton("Clear Fields");
-        JButton exitButton = new JButton("Exit");
+        gbc.gridy = 3;
+        card.add(registerButton, gbc);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(addButton);
-        buttonPanel.add(loadButton);
-        buttonPanel.add(clearButton);
-        buttonPanel.add(exitButton);
+        gbc.gridy = 4;
+        card.add(statusLabel, gbc);
 
-        // Table
-        String[] columns = {"ID", "Name", "Age", "Blood Group", "Contact"};
-        tableModel = new DefaultTableModel(columns, 0);
-        donorTable = new JTable(tableModel);
-        JScrollPane tableScroll = new JScrollPane(donorTable);
-
-        add(formPanel, BorderLayout.NORTH);
-        add(tableScroll, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        // Button actions
-        addButton.addActionListener(e -> addDonor());
-        loadButton.addActionListener(e -> loadDonors());
-        clearButton.addActionListener(e -> clearFields());
-        exitButton.addActionListener(e -> System.exit(0));
-
-        // Load data initially
-        loadDonors();
-    }
-
-    // ✅ Connect to database
-    private void connectDatabase() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/bloodbank", "root", "yourpassword");
-            System.out.println("Database connected successfully!");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Database Connection Failed: " + e.getMessage());
-        }
-    }
-
-    // ✅ Add new donor to database
-    private void addDonor() {
-        String name = nameField.getText();
-        String age = ageField.getText();
-        String bloodGroup = (String) bloodGroupBox.getSelectedItem();
-        String contact = contactField.getText();
-
-        if (name.isEmpty() || age.isEmpty() || contact.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill all fields!", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            String sql = "INSERT INTO donors(name, age, blood_group, contact) VALUES (?, ?, ?, ?)";
-            PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setString(1, name);
-            pst.setInt(2, Integer.parseInt(age));
-            pst.setString(3, bloodGroup);
-            pst.setString(4, contact);
-            pst.executeUpdate();
-
-            JOptionPane.showMessageDialog(this, "Donor added successfully!");
-            loadDonors();
-            clearFields();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error adding donor: " + ex.getMessage());
-        }
-    }
-
-    // ✅ Load donors from database into table
-    private void loadDonors() {
-        tableModel.setRowCount(0);
-        try {
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM donors");
-            while (rs.next()) {
-                tableModel.addRow(new Object[]{
-                    rs.getInt("id"),
-                    rs.getString("name"),
-                    rs.getInt("age"),
-                    rs.getString("blood_group"),
-                    rs.getString("contact")
-                });
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error loading donors: " + e.getMessage());
-        }
-    }
-
-    private void clearFields() {
-        nameField.setText("");
-        ageField.setText("");
-        contactField.setText("");
-        bloodGroupBox.setSelectedIndex(0);
+        mainPanel.add(card);
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new BloodDonorAppDB().setVisible(true));
+        SwingUtilities.invokeLater(() -> new Login().setVisible(true));
     }
 }
