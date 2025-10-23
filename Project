@@ -1,23 +1,23 @@
-package java_project;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.*;
 
-public class Login extends JFrame {
+public class LoginPage extends JFrame {
     private JTextField emailField;
     private JPasswordField passwordField;
     private JButton loginButton, registerButton;
     private JLabel statusLabel;
 
-    public Login() {
+    public LoginPage() {
+        // Frame setup
         setTitle("Login Form");
         setSize(400, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Background panel
+        // Background Panel
         JPanel mainPanel = new JPanel();
         mainPanel.setBackground(new Color(255, 102, 178)); // pink background
         mainPanel.setLayout(new GridBagLayout());
@@ -27,42 +27,99 @@ public class Login extends JFrame {
         JPanel card = new JPanel();
         card.setBackground(Color.WHITE);
         card.setPreferredSize(new Dimension(300, 300));
-        card.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-
-        // Initialize components
-        emailField = new JTextField(20);
-        passwordField = new JPasswordField(20);
-        loginButton = new JButton("Login");
-        registerButton = new JButton("Register");
-        statusLabel = new JLabel("");
-
-        // Add components
-        gbc.gridx = 0; gbc.gridy = 0;
-        card.add(new JLabel("Email:"), gbc);
-        gbc.gridx = 1;
-        card.add(emailField, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 1;
-        card.add(new JLabel("Password:"), gbc);
-        gbc.gridx = 1;
-        card.add(passwordField, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        card.add(loginButton, gbc);
-
-        gbc.gridy = 3;
-        card.add(registerButton, gbc);
-
-        gbc.gridy = 4;
-        card.add(statusLabel, gbc);
-
+        card.setLayout(null);
         mainPanel.add(card);
+
+        JLabel title = new JLabel("Login Form");
+        title.setFont(new Font("Arial", Font.BOLD, 20));
+        title.setBounds(100, 20, 150, 30);
+        card.add(title);
+
+        JLabel emailLabel = new JLabel("Email Address:");
+        emailLabel.setBounds(30, 70, 100, 25);
+        card.add(emailLabel);
+
+        emailField = new JTextField();
+        emailField.setBounds(140, 70, 130, 25);
+        card.add(emailField);
+
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setBounds(30, 110, 100, 25);
+        card.add(passwordLabel);
+
+        passwordField = new JPasswordField();
+        passwordField.setBounds(140, 110, 130, 25);
+        card.add(passwordField);
+
+        // Forgot Password
+        JLabel forgotLabel = new JLabel("Forgot password?");
+        forgotLabel.setForeground(Color.PINK.darker());
+        forgotLabel.setFont(new Font("Arial", Font.PLAIN, 11));
+        forgotLabel.setBounds(140, 140, 120, 25);
+        card.add(forgotLabel);
+
+        // Login button
+        loginButton = new JButton("Login");
+        loginButton.setBounds(100, 180, 100, 30);
+        loginButton.setBackground(new Color(255, 51, 153));
+        loginButton.setForeground(Color.WHITE);
+        card.add(loginButton);
+
+        // Register Donor link
+        registerButton = new JButton("Register Donor");
+        registerButton.setBounds(90, 230, 120, 25);
+        registerButton.setForeground(Color.PINK.darker());
+        registerButton.setBorderPainted(false);
+        registerButton.setBackground(Color.WHITE);
+        card.add(registerButton);
+
+        // Status label
+        statusLabel = new JLabel("", SwingConstants.CENTER);
+        statusLabel.setBounds(20, 260, 250, 25);
+        card.add(statusLabel);
+
+        // Action listeners
+        loginButton.addActionListener(e -> loginUser());
+        registerButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Redirect to Register Donor Page"));
+    }
+
+    private void loginUser() {
+        String email = emailField.getText();
+        String password = new String(passwordField.getPassword());
+
+        // Email validation (only allow gmail.com)
+        if (!email.endsWith("@gmail.com")) {
+            statusLabel.setForeground(Color.RED);
+            statusLabel.setText("Only Gmail addresses are allowed!");
+            return;
+        }
+
+        try {
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/blood_donor", "root", "yourpassword");
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM donors WHERE email=? AND password=?");
+            ps.setString(1, email);
+            ps.setString(2, password);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                statusLabel.setForeground(Color.GREEN);
+                statusLabel.setText("Login Successful!");
+                JOptionPane.showMessageDialog(this, "Welcome " + rs.getString("name"));
+            } else {
+                statusLabel.setForeground(Color.RED);
+                statusLabel.setText("Invalid email or password!");
+            }
+
+            con.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            statusLabel.setForeground(Color.RED);
+            statusLabel.setText("Database Error!");
+        }
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Login().setVisible(true));
+        SwingUtilities.invokeLater(() -> new LoginPage().setVisible(true));
     }
 }
